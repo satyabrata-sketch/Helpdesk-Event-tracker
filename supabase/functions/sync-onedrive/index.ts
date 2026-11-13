@@ -249,33 +249,19 @@ serve(async (req) => {
 
           // Ingest primary structured tables
           if (tracker.id === "helpdesk_tracker" && sheetName.includes("Helpdesk")) {
-            await supabase.from("helpdesk_tickets").delete().neq("id", 0);
-            const structuredTickets = sheetData.rows.map((r) => ({
-              sr_no: String(r["Sr no."] || r["Sr No."] || ""),
-              site: r["Site"] ? String(r["Site"]).trim() : "Unknown",
-              zone: r["Zone"] ? String(r["Zone"]) : null,
-              location: r["Location"] ? String(r["Location"]) : null,
-              month: r["Month"] ? String(r["Month"]) : null,
-              ticket_date: r["Date"] ? new Date(r["Date"]).toISOString() : null,
-              report_time: r["Report Time"] ? String(r["Report Time"]) : null,
-              request_category: r["Request category"] ? String(r["Request category"]).trim() : "Other",
-              employee_name: r["Employee Name"] ? String(r["Employee Name"]) : null,
-              request_via: r["Request Via"] ? String(r["Request Via"]) : null,
-              description: r["Discription"] || r["Description"] || "",
-              action_taken: r["Action taken"] || "",
-              date_close: r["Date close"] ? new Date(r["Date close"]).toISOString() : null,
-              resolved_time: r["Resolved time"] ? String(r["Resolved time"]) : null,
-              status: r["Status / WIP"] || r["Status"] || "Open",
-              request_from: r["Request from"] ? String(r["Request from"]) : null,
-              call_type: r["Call type"] ? String(r["Call type"]) : null,
-              remark: r["Remark"] ? String(r["Remark"]) : null,
-              tat_status: r["TAT Status"] ? String(r["TAT Status"]) : null,
-              raw_data: r,
-              synced_at: new Date().toISOString(),
-            }));
-
-            for (let i = 0; i < structuredTickets.length; i += 250) {
-              await supabase.from("helpdesk_tickets").insert(structuredTickets.slice(i, i + 250));
+            for (const r of sheetData.rows) {
+              const rawSr = String(r["Sr no."] || r["Sr No."] || "").trim().split('.')[0];
+              if (!rawSr || rawSr === 'Sr no.') continue;
+              const statusVal = String(r["Status / WIP"] || r["Status"] || "Open").trim();
+              const updatePayload = {
+                status: statusVal,
+                status_wip: statusVal,
+                action_taken: r["Action taken"] || "",
+                date_close: r["Date close"] ? String(r["Date close"]).slice(0, 10) : null,
+                resolved_time: r["Resolved time"] ? String(r["Resolved time"]) : null,
+                raw: { ...r, "Status / WIP": statusVal, "Status": statusVal }
+              };
+              await supabase.from("helpdesk").update(updatePayload).eq("sr_no", rawSr);
             }
           }
 

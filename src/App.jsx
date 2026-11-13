@@ -79,7 +79,8 @@ import {
   getTrackerConfigs,
   getHelpdeskTickets,
   getEventOperations,
-  triggerOneDriveSync
+  triggerOneDriveSync,
+  triggerHelpdeskSync
 } from './lib/supabase'
 
 export default function App() {
@@ -1190,15 +1191,22 @@ export default function App() {
           if (helpdeskCfg?.last_sync_status === 'access_revoked') {
             setFile2Revoked(true)
           }
-          if (eventCfg?.last_synced_at) {
+          if (helpdeskCfg?.last_synced_at) {
+            setLastSyncedAt(helpdeskCfg.last_synced_at)
+          } else if (eventCfg?.last_synced_at) {
             setLastSyncedAt(eventCfg.last_synced_at)
           }
         }
 
-        const tickets = await getHelpdeskTickets(15000)
+        const tickets = await getHelpdeskTickets()
         if (tickets && tickets.length > 0) {
-          const mappedRows = tickets.map((t) => t.raw_data || t)
-          setHelpdeskData((prev) => ({ ...prev, rows: mappedRows }))
+          setHelpdeskData((prev) => ({
+            ...prev,
+            activeSheet: 'Helpdesk Tracker',
+            sheetNames: ['Helpdesk Tracker'],
+            headers: Object.keys(tickets[0] || {}),
+            rows: tickets
+          }))
         }
 
         const events = await getEventOperations(5000)
@@ -1216,10 +1224,35 @@ export default function App() {
     initSupabaseData()
   }, [])
 
-  // Live Sync directly from Live Excel via /api/sync-live (Part 0)
+  // Live Sync directly from Live Excel / OneDrive (Part 0)
   const handleSyncNow = async (silent = false) => {
     setIsSyncing(true)
     try {
+      const isHelpdeskActive = activeTab === 'helpdesk' || activeTab === 'helpdesk_tracker'
+
+      // Always sync Helpdesk when on Helpdesk tab or when user clicks Sync Live
+      if (isHelpdeskActive || !silent) {
+        try {
+          const storedHdUrl = localStorage.getItem('custom_helpdesk_file_url') || ''
+          const storedHdId = localStorage.getItem('custom_helpdesk_file_id') || ''
+          await triggerHelpdeskSync({ fileUrl: storedHdUrl, fileId: storedHdId })
+        } catch (he) {
+          console.warn('[handleSyncNow] Helpdesk sync trigger warning:', he.message)
+        }
+
+        const liveTickets = await getHelpdeskTickets()
+        if (liveTickets && liveTickets.length > 0) {
+          setHelpdeskData((prev) => ({
+            ...prev,
+            activeSheet: 'Helpdesk Tracker',
+            sheetNames: ['Helpdesk Tracker'],
+            headers: Object.keys(liveTickets[0] || {}),
+            rows: liveTickets
+          }))
+        }
+      }
+
+      // Event sync via /api/sync-live
       const storedUrl = localStorage.getItem('custom_event_file_url') || ''
       const storedId = localStorage.getItem('custom_event_file_id') || ''
       const query = new URLSearchParams()
@@ -1238,7 +1271,8 @@ export default function App() {
             meta: data.meta
           })
         }
-        if (data.helpdesk?.rows && Array.isArray(data.helpdesk.rows)) {
+        // If not on Helpdesk and local seed was small, load Helpdesk rows from server
+        if (!isHelpdeskActive && data.helpdesk?.rows && Array.isArray(data.helpdesk.rows) && (!helpdeskData.rows || helpdeskData.rows.length <= 1131)) {
           setHelpdeskData({
             activeSheet: data.helpdesk.sheet_name || 'Helpdesk Tracker',
             sheetNames: ['Helpdesk Tracker'],
@@ -1246,18 +1280,19 @@ export default function App() {
             rows: data.helpdesk.rows
           })
         }
-        const now = new Date()
-        setLastSyncedAt(now.toISOString())
-        setLastUpdatedText(null)
-        if (!silent) {
-          showToast({
-            type: 'success',
-            title: 'Live Sync Complete',
-            message: `Refreshed from live Excel: ${data.events?.rows?.length || 1582} Events • ${data.helpdesk?.rows?.length || 9920} Helpdesk records.`
-          })
-        }
-      } else {
-        throw new Error(`Sync API returned ${res.status}`)
+      }
+
+      const now = new Date()
+      setLastSyncedAt(now.toISOString())
+      setLastUpdatedText(null)
+      if (!silent) {
+        showToast({
+          type: 'success',
+          title: 'Live Sync Complete',
+          message: isHelpdeskActive
+            ? 'Helpdesk synced from OneDrive Excel and refetched from Supabase.'
+            : 'Refreshed live data from OneDrive Excel & Supabase.'
+        })
       }
     } catch (_err) {
       if (!silent) {
@@ -1272,7 +1307,7 @@ export default function App() {
     }
   }
 
-  // Handle Save File ID and Re-Sync (FINAL FIX V8)
+  // Handle Save Event File ID and Re-Sync (FINAL FIX V8)
   const handleSaveFileIdAndResync = async (inputVal) => {
     setIsSyncing(true)
     try {
@@ -1328,6 +1363,63 @@ export default function App() {
         type: 'error',
         title: 'File Not Found - Check File ID',
         message: err.message || 'Could not load from provided OneDrive File ID / link.'
+      })
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
+  // Handle Save Helpdesk File ID and Re-Sync
+  const handleSaveHelpdeskFileIdAndResync = async (inputVal) => {
+    setIsSyncing(true)
+    try {
+      let customFileUrl = ''
+      let customFileId = ''
+      const trimmed = String(inputVal || '').trim()
+
+      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        customFileUrl = trimmed
+        try {
+          const u = new URL(trimmed)
+          customFileId = u.searchParams.get('d') || ''
+        } catch (_e) {}
+      } else {
+        customFileId = trimmed
+      }
+
+      if (customFileUrl) localStorage.setItem('custom_helpdesk_file_url', customFileUrl)
+      if (customFileId) localStorage.setItem('custom_helpdesk_file_id', customFileId)
+
+      // 1. Fetch latest Excel from OneDrive, upsert into public.helpdesk
+      const syncResult = await triggerHelpdeskSync({
+        fileUrl: customFileUrl,
+        fileId: customFileId
+      })
+
+      // 2. Refetch from Supabase public.helpdesk
+      const liveTickets = await getHelpdeskTickets()
+      if (liveTickets && liveTickets.length > 0) {
+        setHelpdeskData((prev) => ({
+          ...prev,
+          activeSheet: 'Helpdesk Tracker',
+          sheetNames: ['Helpdesk Tracker'],
+          headers: Object.keys(liveTickets[0] || {}),
+          rows: liveTickets
+        }))
+      }
+
+      const syncTime = syncResult.lastSyncedAt || new Date().toISOString()
+      setLastSyncedAt(syncTime)
+      showToast({
+        type: 'success',
+        title: 'Helpdesk Saved & Re-Synced',
+        message: `OneDrive sync complete: ${syncResult.updatedCount || 0} rows updated. Refreshed ${liveTickets?.length || syncResult.totalValidRows} Helpdesk tickets from Supabase.`
+      })
+    } catch (err) {
+      showToast({
+        type: 'error',
+        title: 'Helpdesk Sync Failed',
+        message: err.message || 'Could not sync Helpdesk from OneDrive.'
       })
     } finally {
       setIsSyncing(false)
@@ -1652,6 +1744,7 @@ export default function App() {
         uploadHistory={uploadHistory}
         meta={eventData?.meta || seedData.meta}
         onSaveFileIdAndResync={handleSaveFileIdAndResync}
+        onSaveHelpdeskFileIdAndResync={handleSaveHelpdeskFileIdAndResync}
         showToast={showToast}
       />
 

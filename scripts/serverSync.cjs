@@ -411,6 +411,14 @@ function resolveHelpdeskFilePath(customPath = null) {
     return customPath;
   }
   // 1. Direct OneDrive synchronized folder path (Primary live source)
+  const cbreSyncPath = 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx';
+  if (fs.existsSync(cbreSyncPath)) {
+    return cbreSyncPath;
+  }
+  const localCbreSync = path.resolve('./CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx');
+  if (fs.existsSync(localCbreSync)) {
+    return localCbreSync;
+  }
   const oneDrivePath = 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/Event/HELP DESK TRACKER FY 25-26 - Master (4).xlsx';
   if (fs.existsSync(oneDrivePath)) {
     return oneDrivePath;

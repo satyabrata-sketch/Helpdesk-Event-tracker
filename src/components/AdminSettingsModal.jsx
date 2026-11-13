@@ -52,6 +52,7 @@ export function AdminSettingsModal({
   uploadHistory = [],
   meta = {},
   onSaveFileIdAndResync,
+  onSaveHelpdeskFileIdAndResync,
   showToast
 }) {
   const [adminUsername, setAdminUsername] = useState('admin')
@@ -60,6 +61,7 @@ export function AdminSettingsModal({
   const [authError, setAuthError] = useState('')
   const [activeTab, setActiveTab] = useState('reconciliation')
   const [customFileUrlInput, setCustomFileUrlInput] = useState('')
+  const [customHelpdeskFileUrlInput, setCustomHelpdeskFileUrlInput] = useState('')
   const [syncInterval, setSyncInterval] = useState('5')
   const [isSaving, setIsSaving] = useState(false)
 
@@ -401,12 +403,12 @@ export function AdminSettingsModal({
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                           HELPDESK TRACKER ONEDRIVE PROOF
                         </span>
-                        <span className="text-slate-400 text-[11px]">OneDrive Source of Truth</span>
+                        <span className="text-slate-400 text-[11px]">OneDrive &amp; Supabase Live Sync</span>
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                        <span>Last Modified:</span>
+                        <span>Last Synced:</span>
                         <strong className="text-slate-200">
-                          {meta?.helpdeskFileLastModified ? new Date(meta.helpdeskFileLastModified).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Live on Disk'}
+                          {meta?.helpdeskLastSyncedAt || lastSyncedAt ? new Date(meta?.helpdeskLastSyncedAt || lastSyncedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Live'}
                         </strong>
                       </div>
                     </div>
@@ -429,7 +431,7 @@ export function AdminSettingsModal({
                       </div>
                       <div className="flex items-center gap-2 bg-slate-950/80 p-2.5 rounded border border-slate-800">
                         <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">File Name:</span>
-                        <span className="font-semibold text-slate-200 truncate">{meta?.helpdeskFileName || 'HELP DESK TRACKER FY 25-26 - Master (4).xlsx'}</span>
+                        <span className="font-semibold text-slate-200 truncate">{meta?.helpdeskFileName || 'HELP DESK TRACKER FY 25-26 - Master.xlsx'}</span>
                       </div>
                     </div>
 
@@ -457,15 +459,31 @@ export function AdminSettingsModal({
                       </button>
                     </div>
 
-                    <div className="p-2.5 bg-slate-950/50 rounded-lg border border-slate-800 flex items-center justify-between text-[11px] text-slate-300">
-                      <span>Source: <strong>Helpdesk Tracker Sheet</strong> (9,822 Records)</span>
-                      <button
-                        onClick={() => onTriggerSync && onTriggerSync(false)}
-                        className="px-3 py-1 bg-[#00A651] hover:bg-[#008f45] text-white font-bold rounded flex items-center gap-1.5 transition-all text-xs"
-                      >
-                        <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
-                        <span>Re-Sync Helpdesk + Event</span>
-                      </button>
+                    {/* User Override / Paste Helpdesk Shared Link / File ID */}
+                    <div className="p-3 bg-slate-950/50 rounded-lg border border-slate-800 space-y-2">
+                      <label className="block text-[11px] font-semibold text-slate-300">
+                        Custom Helpdesk File ID / Shared Link Override:
+                      </label>
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <input
+                          type="text"
+                          value={customHelpdeskFileUrlInput}
+                          onChange={(e) => setCustomHelpdeskFileUrlInput(e.target.value)}
+                          placeholder="Paste SharePoint Link or File ID (e.g. w5dc43c3ec1674b61b95cbfbe614ffbc5)"
+                          className="flex-1 bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
+                        />
+                        <button
+                          onClick={() => {
+                            if (onSaveHelpdeskFileIdAndResync) {
+                              onSaveHelpdeskFileIdAndResync(customHelpdeskFileUrlInput)
+                            }
+                          }}
+                          className="bg-[#00A651] hover:bg-[#008f45] text-white px-3.5 py-1.5 rounded text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                          <span>Save &amp; Re-Sync Helpdesk</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

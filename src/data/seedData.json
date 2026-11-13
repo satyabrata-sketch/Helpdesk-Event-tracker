@@ -215863,7 +215863,7 @@
         "Action taken": "Informed the HK team to check & clean",
         "Date close": "2026-05-04",
         "Resolved time": 0.4076388888888889,
-        "Status / WIP": "Not Resolved",
+        "Status / WIP": "Resolved",
         "Request from": "Employee",
         "Call type": "Reactive",
         "Remark": "",
@@ -215872,7 +215872,9 @@
         "Closure Duration": "0 mins",
         "TAT Status": "",
         "isDuplicateSr": false,
-        "hasMultipleSr": false
+        "hasMultipleSr": false,
+        "Status": "Resolved",
+        "status": "Resolved"
       },
       {
         "excelRow": 5074,
@@ -232741,7 +232743,7 @@
         "Action taken": "Informed the Tech team to check & Rectify",
         "Date close": "2026-05-18",
         "Resolved time": "",
-        "Status / WIP": "Not Resolved",
+        "Status / WIP": "Resolved",
         "Request from": "Team Infra - Hitesh",
         "Call type": "Proactive",
         "Remark": "",
@@ -232750,7 +232752,9 @@
         "Closure Duration": "0 mins",
         "TAT Status": "",
         "isDuplicateSr": false,
-        "hasMultipleSr": false
+        "hasMultipleSr": false,
+        "Status": "Resolved",
+        "status": "Resolved"
       },
       {
         "excelRow": 5656,

@@ -76,20 +76,128 @@ export async function updateTrackerConfig(id, updates) {
   }
 }
 
-// Fetch Helpdesk Tickets
-export async function getHelpdeskTickets(limit = 1000) {
-  if (!supabase) return null
+// Fetch Helpdesk Tickets from Supabase public.helpdesk (All 10,068+ rows with range pagination)
+export async function getHelpdeskTickets() {
+  if (supabase) {
+    try {
+      let allRows = []
+      let page = 0
+      const pageSize = 1000
+      while (true) {
+        const { data, error } = await supabase
+          .from('helpdesk')
+          .select('*')
+          .range(page * pageSize, (page + 1) * pageSize - 1)
+        if (error) throw error
+        if (!data || data.length === 0) break
+        allRows = allRows.concat(data)
+        if (data.length < pageSize) break
+        page++
+      }
+
+      if (allRows.length > 0) {
+        return allRows.map((t) => {
+          const st = String(t.status || t.raw?.['Status / WIP'] || t.raw?.['Status'] || '').trim()
+          return {
+            ...t.raw,
+            ...t,
+            'Sr no.': t.sr_no || t.raw?.['Sr no.'] || String(t.id),
+            'Sr No.': t.sr_no || t.raw?.['Sr No.'] || String(t.id),
+            'Status / WIP': st,
+            'Status': st,
+            'status': st,
+            'Site': t.site || t.raw?.['Site'] || '',
+            'Zone': t.zone || t.raw?.['Zone'] || '',
+            'Location': t.location || t.raw?.['Location'] || '',
+            'Month': t.month || t.raw?.['Month'] || '',
+            'Date': t.date || t.raw?.['Date'] || '',
+            'Report Time': t.report_time || t.raw?.['Report Time'] || '',
+            'Request category': t.request_category || t.raw?.['Request category'] || '',
+            'Category': t.request_category || t.raw?.['Category'] || '',
+            'Employee Name': t.employee_name || t.raw?.['Employee Name'] || '',
+            'Request Via': t.request_via || t.raw?.['Request Via'] || '',
+            'Discription': t.description || t.raw?.['Discription'] || '',
+            'Description': t.description || t.raw?.['Description'] || '',
+            'Date close': t.date_close || t.raw?.['Date close'] || '',
+            'Action taken': t.action_taken || t.raw?.['Action taken'] || '',
+            'Resolved time': t.resolved_time || t.raw?.['Resolved time'] || '',
+            'Call type': t.call_type || t.raw?.['Call type'] || '',
+            'Request from': t.request_from || t.raw?.['Request from'] || '',
+            'Defined TAT (Hrs)': t.defined_tat || t.raw?.['Defined TAT (Hrs)'] || '',
+            'Remark': t.remark || t.raw?.['Remark'] || '',
+            'Closure Duration': t.closure_duration || t.raw?.['Closure Duration'] || '',
+            'Closure Time (Hrs)': t.closure_time || t.raw?.['Closure Time (Hrs)'] || '',
+            'TAT Status': t.tat_status || t.raw?.['TAT Status'] || ''
+          }
+        })
+      }
+    } catch (err) {
+      console.warn('Error fetching helpdesk tickets from Supabase client:', err.message)
+    }
+  }
+
+  // Fallback to /api/sync-helpdesk endpoint
   try {
-    const { data, error } = await supabase
-      .from('helpdesk_tickets')
-      .select('*')
-      .order('id', { ascending: false })
-      .limit(limit)
-    if (error) throw error
-    return data
+    const res = await fetch('/api/sync-helpdesk?getTickets=true')
+    if (res.ok) {
+      const json = await res.json()
+      if (json.tickets && json.tickets.length > 0) {
+        return json.tickets.map((t) => {
+          const st = String(t.status || t.raw?.['Status / WIP'] || t.raw?.['Status'] || '').trim()
+          return {
+            ...t.raw,
+            ...t,
+            'Sr no.': t.sr_no || t.raw?.['Sr no.'] || String(t.id),
+            'Sr No.': t.sr_no || t.raw?.['Sr No.'] || String(t.id),
+            'Status / WIP': st,
+            'Status': st,
+            'status': st,
+            'Site': t.site || t.raw?.['Site'] || '',
+            'Zone': t.zone || t.raw?.['Zone'] || '',
+            'Location': t.location || t.raw?.['Location'] || '',
+            'Month': t.month || t.raw?.['Month'] || '',
+            'Date': t.date || t.raw?.['Date'] || '',
+            'Report Time': t.report_time || t.raw?.['Report Time'] || '',
+            'Request category': t.request_category || t.raw?.['Request category'] || '',
+            'Category': t.request_category || t.raw?.['Category'] || '',
+            'Employee Name': t.employee_name || t.raw?.['Employee Name'] || '',
+            'Request Via': t.request_via || t.raw?.['Request Via'] || '',
+            'Discription': t.description || t.raw?.['Discription'] || '',
+            'Description': t.description || t.raw?.['Description'] || '',
+            'Date close': t.date_close || t.raw?.['Date close'] || '',
+            'Action taken': t.action_taken || t.raw?.['Action taken'] || '',
+            'Resolved time': t.resolved_time || t.raw?.['Resolved time'] || '',
+            'Call type': t.call_type || t.raw?.['Call type'] || '',
+            'Request from': t.request_from || t.raw?.['Request from'] || '',
+            'Defined TAT (Hrs)': t.defined_tat || t.raw?.['Defined TAT (Hrs)'] || '',
+            'Remark': t.remark || t.raw?.['Remark'] || '',
+            'Closure Duration': t.closure_duration || t.raw?.['Closure Duration'] || '',
+            'Closure Time (Hrs)': t.closure_time || t.raw?.['Closure Time (Hrs)'] || '',
+            'TAT Status': t.tat_status || t.raw?.['TAT Status'] || ''
+          }
+        })
+      }
+    }
+  } catch (_e) {}
+
+  return null
+}
+
+// Trigger Manual Helpdesk Sync
+export async function triggerHelpdeskSync(options = {}) {
+  try {
+    const res = await fetch('/api/sync-helpdesk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(options)
+    })
+    if (!res.ok) {
+      throw new Error(`Helpdesk sync API returned HTTP ${res.status}`)
+    }
+    return await res.json()
   } catch (err) {
-    console.warn('Error fetching helpdesk_tickets from Supabase:', err.message)
-    return null
+    console.error('Helpdesk sync invocation failed:', err)
+    throw err
   }
 }
 
