@@ -39,11 +39,11 @@ VALUES
 ),
 (
     'helpdesk_tracker',
-    'Helpdesk Tracker FY 25-26 Master',
-    'https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w5dc43c3ec1674b61b95cbfbe614ffbc5&csf=1&web=1&e=3aSaZb',
-    false,
-    'alwajid_ansari@cbre.com (Shared with Read+Edit)',
-    'pending'
+    'HELP DESK TRACKER FY 25-26 - Master.xlsx',
+    'https://cbre-my.sharepoint.com/:x:/r/personal/satyabrata_mohanty1_cbre_com/Documents/Desktop/Trackers/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w9923cb7e81249fa81f4a938c10fa2e4&csf=1&web=1&e=satyabrata',
+    true,
+    'satyabrata_mohanty1@cbre.com (Self Owned)',
+    'success'
 )
 ON CONFLICT (id) DO UPDATE SET
     share_url = EXCLUDED.share_url,

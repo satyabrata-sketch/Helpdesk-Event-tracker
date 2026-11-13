@@ -70,6 +70,7 @@ function resolveHelpdeskFilePath(customPath = null) {
   }
 
   const candidatePaths = [
+    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/HELP DESK TRACKER FY 25-26 - Master.xlsx',
     'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx',
     path.resolve(__dirname, '../CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx'),
     path.resolve('./CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx'),
@@ -89,7 +90,7 @@ function resolveHelpdeskFilePath(customPath = null) {
 }
 
 function extractHelpdeskFileIdAndUrl(customUrl = null, customId = null) {
-  let fileWebUrl = customUrl || process.env.VITE_HELPDESK_TRACKER_URL || 'https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w5dc43c3ec1674b61b95cbfbe614ffbc5&csf=1&web=1&e=3aSaZb';
+  let fileWebUrl = customUrl || process.env.VITE_HELPDESK_TRACKER_URL || 'https://cbre-my.sharepoint.com/:x:/r/personal/satyabrata_mohanty1_cbre_com/Documents/Desktop/Trackers/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w9923cb7e81249fa81f4a938c10fa2e4&csf=1&web=1&e=satyabrata';
   let fileId = customId || process.env.VITE_HELPDESK_FILE_ID || '';
   if (!fileId && fileWebUrl) {
     try {
@@ -97,7 +98,7 @@ function extractHelpdeskFileIdAndUrl(customUrl = null, customId = null) {
       fileId = u.searchParams.get('d') || '';
     } catch (_e) {}
   }
-  if (!fileId) fileId = 'w5dc43c3ec1674b61b95cbfbe614ffbc5';
+  if (!fileId) fileId = 'w9923cb7e81249fa81f4a938c10fa2e4';
   return { fileId, fileWebUrl };
 }
 
@@ -276,6 +277,10 @@ async function syncHelpdeskFromExcel(options = {}) {
     const { error: cfgErr } = await supabase
       .from('tracker_configs')
       .update({
+        name: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
+        share_url: fileWebUrl,
+        is_owned: true,
+        owner_info: 'satyabrata_mohanty1@cbre.com (Self Owned)',
         last_sync_status: 'success',
         last_sync_error: null,
         last_synced_at: syncTimestamp,
@@ -339,3 +344,9 @@ module.exports = {
   resolveHelpdeskFilePath,
   extractHelpdeskFileIdAndUrl
 };
+
+if (require.main === module) {
+  syncHelpdeskFromExcel()
+    .then(r => console.log('[CLI HelpdeskSync Result]:', JSON.stringify(r, null, 2)))
+    .catch(e => console.error('[CLI HelpdeskSync Error]:', e));
+}

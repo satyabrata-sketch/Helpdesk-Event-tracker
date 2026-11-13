@@ -417,10 +417,10 @@ export function AdminSettingsModal({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
                       <div className="flex items-center gap-2 bg-slate-950/80 p-2.5 rounded border border-slate-800">
                         <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">File ID:</span>
-                        <span className="font-mono text-emerald-400 font-bold truncate select-all">{meta?.helpdeskFileId || 'w5dc43c3ec1674b61b95cbfbe614ffbc5'}</span>
+                        <span className="font-mono text-emerald-400 font-bold truncate select-all">{meta?.helpdeskFileId || 'w9923cb7e81249fa81f4a938c10fa2e4'}</span>
                         <button
                           onClick={() => {
-                            navigator.clipboard?.writeText(meta?.helpdeskFileId || 'w5dc43c3ec1674b61b95cbfbe614ffbc5')
+                            navigator.clipboard?.writeText(meta?.helpdeskFileId || 'w9923cb7e81249fa81f4a938c10fa2e4')
                             showToast && showToast({ type: 'success', title: 'Helpdesk File ID Copied', message: 'Copied to clipboard' })
                           }}
                           className="ml-auto text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded cursor-pointer"
@@ -469,7 +469,7 @@ export function AdminSettingsModal({
                           type="text"
                           value={customHelpdeskFileUrlInput}
                           onChange={(e) => setCustomHelpdeskFileUrlInput(e.target.value)}
-                          placeholder="Paste SharePoint Link or File ID (e.g. w5dc43c3ec1674b61b95cbfbe614ffbc5)"
+                          placeholder="Paste SharePoint Link or File ID (e.g. w9923cb7e81249fa81f4a938c10fa2e4)"
                           className="flex-1 bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
                         />
                         <button

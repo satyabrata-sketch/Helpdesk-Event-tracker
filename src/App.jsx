@@ -147,7 +147,7 @@ export default function App() {
   )
   const [helpdeskUrl, setHelpdeskUrl] = useState(
     import.meta.env.VITE_HELPDESK_TRACKER_URL ||
-    'https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w5dc43c3ec1674b61b95cbfbe614ffbc5&csf=1&web=1&e=3aSaZb'
+    'https://cbre-my.sharepoint.com/:x:/r/personal/satyabrata_mohanty1_cbre_com/Documents/Desktop/Trackers/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w9923cb7e81249fa81f4a938c10fa2e4&csf=1&web=1&e=satyabrata'
   )
 
   // Primary Data State (Initialized from 100% full Folder Excel seed or localStorage cache)
@@ -1531,7 +1531,7 @@ export default function App() {
       {/* 2. ACCESS REVOKED WARNING BANNER */}
       {file2Revoked && (
         <AccessRevokedBanner
-          ownerEmail="alwajid_ansari@cbre.com"
+          ownerEmail="satyabrata_mohanty1@cbre.com"
           customMessage="OneDrive Sync Failed - Please Upload Excel Manually to Update"
           onRetry={() => {
             setFile2Revoked(false)

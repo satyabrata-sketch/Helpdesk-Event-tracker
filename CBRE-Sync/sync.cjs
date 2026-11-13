@@ -3,7 +3,7 @@ require('dotenv').config();
 const { syncHelpdeskFromExcel } = require('../scripts/helpdeskSync.cjs');
 const fs = require('fs');
 
-const HELP_PATH = process.env.HELP_PATH || 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx';
+const HELP_PATH = process.env.HELP_PATH || 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/HELP DESK TRACKER FY 25-26 - Master.xlsx';
 
 async function sync() {
   try {
