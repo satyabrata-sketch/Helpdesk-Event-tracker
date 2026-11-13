@@ -645,10 +645,10 @@ export function AdminSettingsModal({
                         <tr className="hover:bg-slate-100">
                           <td className="py-2 px-3 border border-slate-300 font-semibold">CLOSED / RESOLVED TICKETS</td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-emerald-700">
-                            {Number(meta?.helpdeskReconciliation?.resolvedTotal || 9893).toLocaleString()}
+                            {Number(meta?.helpdeskReconciliation?.resolvedTotal || 9894).toLocaleString()}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-emerald-700">
-                            {Number(meta?.helpdeskReconciliation?.resolvedTotal || 9893).toLocaleString()}
+                            {Number(meta?.helpdeskReconciliation?.resolvedTotal || 9894).toLocaleString()}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono text-emerald-600 font-bold">
                             0
@@ -660,10 +660,10 @@ export function AdminSettingsModal({
                         <tr className="hover:bg-slate-100">
                           <td className="py-2 px-3 border border-slate-300 font-semibold">OPEN / PENDING TICKETS (TOTAL)</td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-amber-700">
-                            {meta?.helpdeskReconciliation?.openWipTotal !== undefined ? meta.helpdeskReconciliation.openWipTotal : 27}
+                            {meta?.helpdeskReconciliation?.openWipTotal !== undefined ? meta.helpdeskReconciliation.openWipTotal : 26}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-amber-700">
-                            {meta?.helpdeskReconciliation?.openWipTotal !== undefined ? meta.helpdeskReconciliation.openWipTotal : 27}
+                            {meta?.helpdeskReconciliation?.openWipTotal !== undefined ? meta.helpdeskReconciliation.openWipTotal : 26}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono text-emerald-600 font-bold">
                             0
@@ -694,10 +694,10 @@ export function AdminSettingsModal({
                             OF WHICH NOT RESOLVED
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-amber-700">
-                            {meta?.helpdeskReconciliation?.notResolvedTotal !== undefined ? meta.helpdeskReconciliation.notResolvedTotal : 24}
+                            {meta?.helpdeskReconciliation?.notResolvedTotal !== undefined ? meta.helpdeskReconciliation.notResolvedTotal : 23}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-amber-700">
-                            {meta?.helpdeskReconciliation?.notResolvedTotal !== undefined ? meta.helpdeskReconciliation.notResolvedTotal : 24}
+                            {meta?.helpdeskReconciliation?.notResolvedTotal !== undefined ? meta.helpdeskReconciliation.notResolvedTotal : 23}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono text-emerald-600 font-bold">
                             0

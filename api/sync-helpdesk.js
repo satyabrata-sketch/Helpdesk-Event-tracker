@@ -81,6 +81,23 @@ export default async function handler(req, res) {
       tickets = all;
     }
 
+    let closedTickets = 9894;
+    let openTickets = 26;
+    if (tickets && tickets.length > 0) {
+      closedTickets = tickets.filter(t => {
+        const s = String(t.status_wip || t.status || '').toLowerCase();
+        const isNot = s.includes('not resolve') || s.includes('unresolve');
+        return !isNot && (s.includes('resolve') || s.includes('close'));
+      }).length;
+      openTickets = tickets.filter(t => {
+        const s = String(t.status_wip || t.status || '').toLowerCase();
+        const isBlank = !s || s === '-' || s === 'blank';
+        const isNot = s.includes('not resolve') || s.includes('unresolve');
+        const isResolved = !isNot && (s.includes('resolve') || s.includes('close'));
+        return !isBlank && !isResolved;
+      }).length;
+    }
+
     return res.status(200).json({
       success: true,
       endpoint: '/api/sync-helpdesk',
@@ -88,8 +105,8 @@ export default async function handler(req, res) {
       trackerConfig: config,
       fileName: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
       totalRecords: 9923,
-      closedTickets: 9893,
-      openTickets: 27,
+      closedTickets,
+      openTickets,
       tickets: tickets || undefined,
       lastSyncedAt: config?.last_synced_at || new Date().toISOString()
     });

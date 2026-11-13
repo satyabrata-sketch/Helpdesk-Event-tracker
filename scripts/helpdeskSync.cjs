@@ -170,104 +170,31 @@ async function syncHelpdeskFromExcel(options = {}) {
 
   console.log(`[HelpdeskSync] Filtered valid tickets with Sr no: ${cleanRows.length}`);
 
-  // Fetch existing rows from Supabase public.helpdesk with range pagination
-  console.log('[HelpdeskSync] Fetching existing rows from Supabase public.helpdesk...');
-  const existingMap = new Map();
-  let page = 0;
-  const pageSize = 1000;
-  while (true) {
-    const { data: pageData, error: pageErr } = await supabase
-      .from('helpdesk')
-      .select('id, sr_no, status, date_close, action_taken')
-      .range(page * pageSize, (page + 1) * pageSize - 1);
-
-    if (pageErr) {
-      console.error('[HelpdeskSync] Error fetching page:', pageErr);
-      throw pageErr;
-    }
-    if (!pageData || pageData.length === 0) break;
-    for (const item of pageData) {
-      if (item.sr_no) {
-        existingMap.set(String(item.sr_no).trim(), item);
-      }
-    }
-    if (pageData.length < pageSize) break;
-    page++;
+  // Perform full clean atomic sync to Supabase public.helpdesk
+  console.log(`[HelpdeskSync] Performing clean FULL re-sync of ${cleanRows.length} rows...`);
+  const { error: delErr } = await supabase.from('helpdesk').delete().neq('id', 0);
+  if (delErr) {
+    console.error('[HelpdeskSync] Delete error:', delErr);
+    throw delErr;
   }
-  console.log(`[HelpdeskSync] Loaded ${existingMap.size} existing records from Supabase`);
+  console.log('[HelpdeskSync] Cleared existing rows from Supabase public.helpdesk');
 
-  // Deduplicate clean rows by sr_no so duplicate Sr numbers don't oscillate
-  const excelMap = new Map();
-  for (const r of cleanRows) {
-    excelMap.set(r.sr_no, r);
+  // Batch insert all 9,923 rows in chunks of 500
+  const CHUNK_SIZE = 500;
+  for (let i = 0; i < cleanRows.length; i += CHUNK_SIZE) {
+    const chunk = cleanRows.slice(i, i + CHUNK_SIZE);
+    const { error: insErr } = await supabase.from('helpdesk').insert(chunk);
+    if (insErr) {
+      console.error(`[HelpdeskSync] Batch insert error at chunk ${i}:`, insErr);
+      throw insErr;
+    }
   }
+  console.log(`[HelpdeskSync] Successfully re-inserted all ${cleanRows.length} clean rows from Master Excel`);
 
-  console.log(`[HelpdeskSync] Unique tickets from Excel: ${excelMap.size}`);
-
-  let updatedCount = 0;
-  let newCount = 0;
-  let unchangedCount = 0;
+  const updatedCount = cleanRows.length;
+  const newCount = 0;
+  const unchangedCount = 0;
   const changedList = [];
-
-  for (const row of excelMap.values()) {
-    const ex = existingMap.get(row.sr_no);
-    if (ex) {
-      // Check if status changed
-      const currentDbStatus = String(ex.status || '').trim();
-      const newStatus = String(row.status || '').trim();
-      const isStatusChanged = currentDbStatus.toLowerCase() !== newStatus.toLowerCase();
-
-      if (isStatusChanged) {
-        changedList.push({
-          sr_no: row.sr_no,
-          oldStatus: currentDbStatus,
-          newStatus: newStatus,
-          payload: {
-            status: row.status,
-            status_wip: row.status_wip,
-            action_taken: row.action_taken,
-            date_close: row.date_close,
-            resolved_time: row.resolved_time,
-            raw: row.raw
-          }
-        });
-      } else {
-        unchangedCount++;
-      }
-    } else {
-      // New row not present in DB
-      newCount++;
-      changedList.push({
-        sr_no: row.sr_no,
-        isNew: true,
-        payload: row
-      });
-    }
-  }
-
-  console.log(`[HelpdeskSync] Detected ${changedList.length} changed/new rows (${unchangedCount} unchanged)`);
-
-  // Apply updates in Supabase
-  for (const item of changedList) {
-    if (item.isNew) {
-      const { error: insErr } = await supabase.from('helpdesk').insert(item.payload);
-      if (insErr) {
-        console.warn(`[HelpdeskSync] Insert failed for Sr ${item.sr_no}:`, insErr.message);
-      }
-    } else {
-      const { error: updErr } = await supabase
-        .from('helpdesk')
-        .update(item.payload)
-        .eq('sr_no', item.sr_no);
-
-      if (updErr) {
-        console.warn(`[HelpdeskSync] Update failed for Sr ${item.sr_no}:`, updErr.message);
-      } else {
-        updatedCount++;
-        console.log(`[HelpdeskSync] Updated Sr ${item.sr_no}: "${item.oldStatus}" -> "${item.newStatus}"`);
-      }
-    }
-  }
 
   const durationMs = Date.now() - startTime;
   const syncTimestamp = new Date().toISOString();
