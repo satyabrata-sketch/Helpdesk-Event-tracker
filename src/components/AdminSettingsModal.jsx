@@ -643,10 +643,10 @@ export function AdminSettingsModal({
                         <tr className="hover:bg-slate-100">
                           <td className="py-2 px-3 border border-slate-300 font-semibold">CLOSED / RESOLVED TICKETS</td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-emerald-700">
-                            {Number(meta?.helpdeskReconciliation?.resolvedTotal || 9891).toLocaleString()}
+                            {Number(meta?.helpdeskReconciliation?.resolvedTotal || 9893).toLocaleString()}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-emerald-700">
-                            {Number(meta?.helpdeskReconciliation?.resolvedTotal || 9891).toLocaleString()}
+                            {Number(meta?.helpdeskReconciliation?.resolvedTotal || 9893).toLocaleString()}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono text-emerald-600 font-bold">
                             0
@@ -658,10 +658,10 @@ export function AdminSettingsModal({
                         <tr className="hover:bg-slate-100">
                           <td className="py-2 px-3 border border-slate-300 font-semibold">OPEN / PENDING TICKETS (TOTAL)</td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-amber-700">
-                            {meta?.helpdeskReconciliation?.openWipTotal !== undefined ? meta.helpdeskReconciliation.openWipTotal : 29}
+                            {meta?.helpdeskReconciliation?.openWipTotal !== undefined ? meta.helpdeskReconciliation.openWipTotal : 27}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-amber-700">
-                            {meta?.helpdeskReconciliation?.openWipTotal !== undefined ? meta.helpdeskReconciliation.openWipTotal : 29}
+                            {meta?.helpdeskReconciliation?.openWipTotal !== undefined ? meta.helpdeskReconciliation.openWipTotal : 27}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono text-emerald-600 font-bold">
                             0
@@ -692,10 +692,10 @@ export function AdminSettingsModal({
                             OF WHICH NOT RESOLVED
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-amber-700">
-                            {meta?.helpdeskReconciliation?.notResolvedTotal !== undefined ? meta.helpdeskReconciliation.notResolvedTotal : 26}
+                            {meta?.helpdeskReconciliation?.notResolvedTotal !== undefined ? meta.helpdeskReconciliation.notResolvedTotal : 24}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono font-bold text-amber-700">
-                            {meta?.helpdeskReconciliation?.notResolvedTotal !== undefined ? meta.helpdeskReconciliation.notResolvedTotal : 26}
+                            {meta?.helpdeskReconciliation?.notResolvedTotal !== undefined ? meta.helpdeskReconciliation.notResolvedTotal : 24}
                           </td>
                           <td className="py-2 px-3 border border-slate-300 text-right font-mono text-emerald-600 font-bold">
                             0
@@ -782,13 +782,13 @@ export function AdminSettingsModal({
 
                     <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-200 text-emerald-900 text-[11px] flex flex-wrap items-center justify-between gap-2">
                       <span>
-                        <strong>Formula Check:</strong> Excel Rows 9,923 = Dashboard 9,923 (Closed 9,891 + Open/Pending 29 + Blank Status 3) | Diff: 0 | Duplicate Sr Extra 63 shown with flag 'Duplicate Sr' in table, NOT hidden | Wrong Entries: 7 distinct
+                        <strong>Formula Check:</strong> Excel Rows 9,923 = Dashboard 9,923 (Closed 9,893 + Open/Pending 27 + Blank Status 3) | Diff: 0 | Duplicate Sr Extra 63 shown with flag 'Duplicate Sr' in table, NOT hidden | Wrong Entries: 7 distinct
                       </span>
                       <span className="font-bold text-emerald-700 bg-emerald-200/80 px-2 py-0.5 rounded text-[10px]">Exact 100% Match ✅</span>
                     </div>
 
                     <div className="p-3 bg-white rounded-lg border border-slate-200 text-slate-600 text-[11px] flex items-center justify-between">
-                      <span>Last Sync: <strong>{meta?.helpdeskReconciliation?.lastSync ? new Date(meta.helpdeskReconciliation.lastSync).toLocaleTimeString() : 'Live on Disk'}</strong> • Source: <strong>{meta?.helpdeskFileName || 'HELP DESK TRACKER FY 25-26 - Master (4).xlsx'}</strong></span>
+                      <span>Last Sync: <strong>{meta?.helpdeskReconciliation?.lastSync ? new Date(meta.helpdeskReconciliation.lastSync).toLocaleTimeString() : 'Live on Disk'}</strong> • Source: <strong>{meta?.helpdeskFileName || 'HELP DESK TRACKER FY 25-26 - Master.xlsx'}</strong></span>
                       <span className="font-bold text-emerald-700">Diff: 0</span>
                     </div>
 

@@ -109,7 +109,7 @@ for (let i = 2; i < rawEvent.length; i++) {
 console.log(`Processed ${events.length} valid events (Expected: 2093)`);
 
 console.log('--- 2. Processing Helpdesk Tracker ---');
-const helpBuf = fs.readFileSync('./HELP DESK TRACKER FY 25-26 - Master (4).xlsx');
+const helpBuf = fs.readFileSync('./HELP DESK TRACKER FY 25-26 - Master.xlsx');
 const wbHelp = xlsx.read(helpBuf, { type: 'buffer' });
 const wsHelp = wbHelp.Sheets['Helpdesk Tracker'];
 const rawHelp = xlsx.utils.sheet_to_json(wsHelp, { header: 1 });
@@ -144,7 +144,7 @@ const fullSeed = {
     lastUpdated: new Date().toISOString(),
     eventSource: 'Yearly Event Tracker- DT-3 and DT-4 Updated.xlsx',
     eventSheet: 'Master_Event_Tracker_2026',
-    helpdeskSource: 'HELP DESK TRACKER FY 25-26 - Master (4).xlsx',
+    helpdeskSource: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
     helpdeskSheet: 'Helpdesk Tracker',
     totalValidEvents: events.length,
     totalValidHelpdesk: helpdeskTickets.length

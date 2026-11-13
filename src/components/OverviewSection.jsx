@@ -56,7 +56,12 @@ import {
   deriveEventCategory,
   extractHelpdeskFloor,
   isHelpdeskWrongEntry,
-  getHelpdeskWrongReason
+  getHelpdeskWrongReason,
+  normalizeHelpdeskChannel,
+  normalizeHelpdeskSite,
+  normalizeHelpdeskZone,
+  normalizeHelpdeskCategory,
+  normalizeHelpdeskStatus
 } from '../lib/dateUtils'
 
 export function OverviewSection({
@@ -74,6 +79,7 @@ export function OverviewSection({
   const [startDate, setStartDate] = useState('2026-01-01')
   const [endDate, setEndDate] = useState('2026-12-31')
   const [selectedSite, setSelectedSite] = useState('All') // 'All' | 'Downtown-3' | 'Downtown-4'
+  const [datePreset, setDatePreset] = useState('all')
   const [searchKeyword, setSearchKeyword] = useState('')
 
   const todayStr = useMemo(() => getTodayIST(), [])
@@ -83,6 +89,7 @@ export function OverviewSection({
     setStartDate('2026-01-01')
     setEndDate('2026-12-31')
     setSelectedSite('All')
+    setDatePreset('all')
     setSearchKeyword('')
   }
 
@@ -248,12 +255,10 @@ export function OverviewSection({
   const hdChannelCounts = useMemo(() => {
     const map = {}
     filteredHelpdesk.forEach((r) => {
-      let via = String(r['Request Via'] || '').trim()
-      if (!via || via === '-' || via.toLowerCase() === 'unspecified') via = 'Other'
-      if (via.toLowerCase() === 'in person') via = 'In Person'
-      map[via] = (map[via] || 0) + 1
+      const channel = normalizeHelpdeskChannel(r['Request Via'])
+      map[channel] = (map[channel] || 0) + 1
     })
-    const colors = ['#0E7490', '#0284C7', '#38BDF8', '#67E8F9', '#14B8A6']
+    const colors = ['#0E7490', '#0284C7', '#38BDF8', '#67E8F9', '#14B8A6', '#F59E0B']
     return Object.entries(map)
       .map(([channel, count], idx) => ({
         channel,

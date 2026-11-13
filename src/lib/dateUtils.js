@@ -1770,6 +1770,89 @@ export function extractHelpdeskZone(r) {
 }
 
 /**
+ * Normalizes Helpdesk 'Request Via' (Channel)
+ * Trims, title-cases, merges synonyms:
+ * "MS Teams" / "Microsoft Teams" -> "Teams"
+ * "In-Person" / "Walk-in" -> "In Person"
+ * "E-Mail" / "email" / "Mail" -> "Email"
+ * "QR" / "QR Scan" -> "QR Code"
+ * "Call" / "Telephone" -> "Phone"
+ * Empty / unspecified -> "Other"
+ */
+export function normalizeHelpdeskChannel(via) {
+  let s = String(via || '').trim();
+  if (!s || s === '-' || s === '—' || s.toLowerCase() === 'unspecified') return 'Other';
+  const l = s.toLowerCase();
+  if (l.includes('team')) return 'Teams';
+  if (l.includes('walk') || l.includes('person') || l.includes('in-person')) return 'In Person';
+  if (l.includes('mail')) return 'Email';
+  if (l.includes('qr')) return 'QR Code';
+  if (l.includes('phone') || l.includes('call') || l.includes('tele')) return 'Phone';
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+/**
+ * Normalizes Helpdesk Site:
+ * Trims, removes trailing spaces, merges DT3 variations to 'DT3',
+ * DT4 floors to 'DT4 L1', 'DT4 L4', 'DT4 L5', 'DT4 L6', or 'DT4'.
+ */
+export function normalizeHelpdeskSite(site) {
+  let s = String(site || '').trim();
+  const l = s.toLowerCase();
+  if (l === 'dt3' || l === 'downtown-3' || l === 'downtown 3') return 'DT3';
+  if (l === 'dt4' || l === 'downtown-4' || l === 'downtown 4') return 'DT4';
+  const m = s.match(/dt\s*4\s*l\s*(\d+)/i) || s.match(/downtown\s*4\s*l\s*(\d+)/i);
+  if (m) return `DT4 L${m[1]}`;
+  return s;
+}
+
+/**
+ * Normalizes Helpdesk Zone:
+ * Trims, standardizes to 'Zone A' through 'Zone F', 'Ground Floor', or 'Unassigned'.
+ */
+export function normalizeHelpdeskZone(zone) {
+  let s = String(zone || '').trim();
+  if (!s || s === '-' || s === '—') return 'Unassigned';
+  const m = s.match(/^zone\s*([a-f])$/i);
+  if (m) return `Zone ${m[1].toUpperCase()}`;
+  if (s.toLowerCase().includes('ground')) return 'Ground Floor';
+  return s;
+}
+
+/**
+ * Normalizes Helpdesk Category (Request category):
+ * Canonical title-case names: Housekeeping, HVAC, Event, E&M, Employee Access, F&B, Locker Request, Other.
+ */
+export function normalizeHelpdeskCategory(category) {
+  let s = String(category || '').trim();
+  if (!s || s === '-' || s === '—' || /^[0-9\.]+$/.test(s)) return 'Other';
+  const l = s.toLowerCase();
+  if (l.includes('housekeeping')) return 'Housekeeping';
+  if (l.includes('hvac')) return 'HVAC';
+  if (l.includes('event')) return 'Event';
+  if (l.includes('e&m') || l.includes('e & m')) return 'E&M';
+  if (l.includes('employee access') || l.includes('access')) return 'Employee Access';
+  if (l.includes('f&b') || l.includes('f & b')) return 'F&B';
+  if (l.includes('locker')) return 'Locker Request';
+  return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+/**
+ * Normalizes Helpdesk Status (Status / WIP):
+ * Canonical names: Resolved, Open, Work In Progress, Not Resolved, Blank.
+ */
+export function normalizeHelpdeskStatus(status) {
+  let s = String(status || '').trim();
+  if (!s || s === '-' || s === '—' || s.toLowerCase() === 'blank' || s.toLowerCase() === 'not mentioned') return 'Blank';
+  const l = s.toLowerCase();
+  if (l.includes('progress') || l.includes('wip')) return 'Work In Progress';
+  if (l.includes('not resolve') || l.includes('unresolve')) return 'Not Resolved';
+  if (l.includes('resolve') || l.includes('close')) return 'Resolved';
+  if (l.includes('open')) return 'Open';
+  return s;
+}
+
+/**
  * Helpdesk Ticket Raised By extractor (from 'Request from' + 'Employee Name')
  */
 export function extractTicketRaisedBy(r) {

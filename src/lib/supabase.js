@@ -3,6 +3,13 @@
 // Updated to support Supabase Publishable Key (sb_publishable_...) as Anon Key
 // ==============================================================================
 import { createClient } from '@supabase/supabase-js'
+import {
+  normalizeHelpdeskChannel,
+  normalizeHelpdeskSite,
+  normalizeHelpdeskZone,
+  normalizeHelpdeskCategory,
+  normalizeHelpdeskStatus
+} from './dateUtils'
 
 // Clean and sanitize URL and keys (removes any accidental brackets or whitespace)
 const rawUrl = import.meta.env.VITE_SUPABASE_URL || ''
@@ -76,6 +83,47 @@ export async function updateTrackerConfig(id, updates) {
   }
 }
 
+function mapHelpdeskTicket(t) {
+  const rawSt = String(t.status || t.raw?.['Status / WIP'] || t.raw?.['Status'] || '').trim()
+  const st = normalizeHelpdeskStatus(rawSt)
+  const normVia = normalizeHelpdeskChannel(t.request_via || t.raw?.['Request Via'])
+  const normSite = normalizeHelpdeskSite(t.site || t.raw?.['Site'])
+  const normZone = normalizeHelpdeskZone(t.zone || t.raw?.['Zone'])
+  const normCat = normalizeHelpdeskCategory(t.request_category || t.raw?.['Request category'] || t.category || t.raw?.['Category'])
+
+  return {
+    ...t.raw,
+    ...t,
+    'Sr no.': t.sr_no || t.raw?.['Sr no.'] || String(t.id),
+    'Sr No.': t.sr_no || t.raw?.['Sr No.'] || String(t.id),
+    'Status / WIP': st,
+    'Status': st,
+    'status': st,
+    'Site': normSite,
+    'Zone': normZone,
+    'Location': t.location || t.raw?.['Location'] || '',
+    'Month': t.month || t.raw?.['Month'] || '',
+    'Date': t.date || t.raw?.['Date'] || '',
+    'Report Time': t.report_time || t.raw?.['Report Time'] || '',
+    'Request category': normCat,
+    'Category': normCat,
+    'Employee Name': t.employee_name || t.raw?.['Employee Name'] || '',
+    'Request Via': normVia,
+    'Discription': t.description || t.raw?.['Discription'] || '',
+    'Description': t.description || t.raw?.['Description'] || '',
+    'Date close': t.date_close || t.raw?.['Date close'] || '',
+    'Action taken': t.action_taken || t.raw?.['Action taken'] || '',
+    'Resolved time': t.resolved_time || t.raw?.['Resolved time'] || '',
+    'Call type': t.call_type || t.raw?.['Call type'] || '',
+    'Request from': t.request_from || t.raw?.['Request from'] || '',
+    'Defined TAT (Hrs)': t.defined_tat || t.raw?.['Defined TAT (Hrs)'] || '',
+    'Remark': t.remark || t.raw?.['Remark'] || '',
+    'Closure Duration': t.closure_duration || t.raw?.['Closure Duration'] || '',
+    'Closure Time (Hrs)': t.closure_time || t.raw?.['Closure Time (Hrs)'] || '',
+    'TAT Status': t.tat_status || t.raw?.['TAT Status'] || ''
+  }
+}
+
 // Fetch Helpdesk Tickets from Supabase public.helpdesk (All 10,068+ rows with range pagination)
 export async function getHelpdeskTickets() {
   if (supabase) {
@@ -96,40 +144,7 @@ export async function getHelpdeskTickets() {
       }
 
       if (allRows.length > 0) {
-        return allRows.map((t) => {
-          const st = String(t.status || t.raw?.['Status / WIP'] || t.raw?.['Status'] || '').trim()
-          return {
-            ...t.raw,
-            ...t,
-            'Sr no.': t.sr_no || t.raw?.['Sr no.'] || String(t.id),
-            'Sr No.': t.sr_no || t.raw?.['Sr No.'] || String(t.id),
-            'Status / WIP': st,
-            'Status': st,
-            'status': st,
-            'Site': t.site || t.raw?.['Site'] || '',
-            'Zone': t.zone || t.raw?.['Zone'] || '',
-            'Location': t.location || t.raw?.['Location'] || '',
-            'Month': t.month || t.raw?.['Month'] || '',
-            'Date': t.date || t.raw?.['Date'] || '',
-            'Report Time': t.report_time || t.raw?.['Report Time'] || '',
-            'Request category': t.request_category || t.raw?.['Request category'] || '',
-            'Category': t.request_category || t.raw?.['Category'] || '',
-            'Employee Name': t.employee_name || t.raw?.['Employee Name'] || '',
-            'Request Via': t.request_via || t.raw?.['Request Via'] || '',
-            'Discription': t.description || t.raw?.['Discription'] || '',
-            'Description': t.description || t.raw?.['Description'] || '',
-            'Date close': t.date_close || t.raw?.['Date close'] || '',
-            'Action taken': t.action_taken || t.raw?.['Action taken'] || '',
-            'Resolved time': t.resolved_time || t.raw?.['Resolved time'] || '',
-            'Call type': t.call_type || t.raw?.['Call type'] || '',
-            'Request from': t.request_from || t.raw?.['Request from'] || '',
-            'Defined TAT (Hrs)': t.defined_tat || t.raw?.['Defined TAT (Hrs)'] || '',
-            'Remark': t.remark || t.raw?.['Remark'] || '',
-            'Closure Duration': t.closure_duration || t.raw?.['Closure Duration'] || '',
-            'Closure Time (Hrs)': t.closure_time || t.raw?.['Closure Time (Hrs)'] || '',
-            'TAT Status': t.tat_status || t.raw?.['TAT Status'] || ''
-          }
-        })
+        return allRows.map(mapHelpdeskTicket)
       }
     } catch (err) {
       console.warn('Error fetching helpdesk tickets from Supabase client:', err.message)
@@ -142,40 +157,7 @@ export async function getHelpdeskTickets() {
     if (res.ok) {
       const json = await res.json()
       if (json.tickets && json.tickets.length > 0) {
-        return json.tickets.map((t) => {
-          const st = String(t.status || t.raw?.['Status / WIP'] || t.raw?.['Status'] || '').trim()
-          return {
-            ...t.raw,
-            ...t,
-            'Sr no.': t.sr_no || t.raw?.['Sr no.'] || String(t.id),
-            'Sr No.': t.sr_no || t.raw?.['Sr No.'] || String(t.id),
-            'Status / WIP': st,
-            'Status': st,
-            'status': st,
-            'Site': t.site || t.raw?.['Site'] || '',
-            'Zone': t.zone || t.raw?.['Zone'] || '',
-            'Location': t.location || t.raw?.['Location'] || '',
-            'Month': t.month || t.raw?.['Month'] || '',
-            'Date': t.date || t.raw?.['Date'] || '',
-            'Report Time': t.report_time || t.raw?.['Report Time'] || '',
-            'Request category': t.request_category || t.raw?.['Request category'] || '',
-            'Category': t.request_category || t.raw?.['Category'] || '',
-            'Employee Name': t.employee_name || t.raw?.['Employee Name'] || '',
-            'Request Via': t.request_via || t.raw?.['Request Via'] || '',
-            'Discription': t.description || t.raw?.['Discription'] || '',
-            'Description': t.description || t.raw?.['Description'] || '',
-            'Date close': t.date_close || t.raw?.['Date close'] || '',
-            'Action taken': t.action_taken || t.raw?.['Action taken'] || '',
-            'Resolved time': t.resolved_time || t.raw?.['Resolved time'] || '',
-            'Call type': t.call_type || t.raw?.['Call type'] || '',
-            'Request from': t.request_from || t.raw?.['Request from'] || '',
-            'Defined TAT (Hrs)': t.defined_tat || t.raw?.['Defined TAT (Hrs)'] || '',
-            'Remark': t.remark || t.raw?.['Remark'] || '',
-            'Closure Duration': t.closure_duration || t.raw?.['Closure Duration'] || '',
-            'Closure Time (Hrs)': t.closure_time || t.raw?.['Closure Time (Hrs)'] || '',
-            'TAT Status': t.tat_status || t.raw?.['TAT Status'] || ''
-          }
-        })
+        return json.tickets.map(mapHelpdeskTicket)
       }
     }
   } catch (_e) {}

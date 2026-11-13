@@ -73,10 +73,10 @@ function resolveHelpdeskFilePath(customPath = null) {
     'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx',
     path.resolve(__dirname, '../CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx'),
     path.resolve('./CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx'),
-    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/HELP DESK TRACKER FY 25-26 - Master (4).xlsx',
-    path.resolve('./HELP DESK TRACKER FY 25-26 - Master (4).xlsx'),
-    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/HELP DESK TRACKER FY 25-26 - Master (3).xlsx',
-    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/HELP DESK TRACKER FY 25-26.xlsx'
+    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/HELP DESK TRACKER FY 25-26 - Master.xlsx',
+    path.resolve('./HELP DESK TRACKER FY 25-26 - Master.xlsx'),
+    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/Event/HELP DESK TRACKER FY 25-26 - Master.xlsx',
+    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/HELP DESK TRACKER FY 25-26 - Master.xlsx'
   ];
 
   for (const p of candidatePaths) {

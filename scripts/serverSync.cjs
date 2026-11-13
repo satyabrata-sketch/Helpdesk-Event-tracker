@@ -419,12 +419,12 @@ function resolveHelpdeskFilePath(customPath = null) {
   if (fs.existsSync(localCbreSync)) {
     return localCbreSync;
   }
-  const oneDrivePath = 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/Event/HELP DESK TRACKER FY 25-26 - Master (4).xlsx';
+  const oneDrivePath = 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/Event/HELP DESK TRACKER FY 25-26 - Master.xlsx';
   if (fs.existsSync(oneDrivePath)) {
     return oneDrivePath;
   }
   // 2. Local workspace path
-  const localPath = path.resolve('./HELP DESK TRACKER FY 25-26 - Master (4).xlsx');
+  const localPath = path.resolve('./HELP DESK TRACKER FY 25-26 - Master.xlsx');
   if (fs.existsSync(localPath)) {
     return localPath;
   }
@@ -619,12 +619,12 @@ function getLiveExcelData(force = false, options = {}) {
       totalValidRowsAcrossAll: events.stats.totalValidRowsAcrossAll,
       uniqueIdsCount: events.stats.uniqueIdsCount,
       helpdeskFileId: helpdesk.fileId || 'w5dc43c3ec1674b61b95cbfbe614ffbc5',
-      helpdeskFileName: helpdesk.fileName || 'HELP DESK TRACKER FY 25-26 - Master (4).xlsx',
+      helpdeskFileName: helpdesk.fileName || 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
       helpdeskFileWebUrl: helpdesk.fileWebUrl || 'https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w5dc43c3ec1674b61b95cbfbe614ffbc5&csf=1&web=1&e=3aSaZb',
       helpdeskFileLastModified: helpdesk.fileLastModified || new Date().toISOString(),
       helpdeskFilePath: helpdesk.filePath,
       helpdeskReconciliation: helpdesk.reconciliation,
-      helpdeskSource: helpdesk.fileName || 'HELP DESK TRACKER FY 25-26 - Master (4).xlsx',
+      helpdeskSource: helpdesk.fileName || 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
       helpdeskSheet: 'Helpdesk Tracker',
       totalValidHelpdesk: helpdesk.stats.totalValidHelpdesk,
       helpdeskUniqueTickets: helpdesk.stats.uniqueTicketIds

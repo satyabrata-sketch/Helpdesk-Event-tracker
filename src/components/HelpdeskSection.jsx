@@ -68,7 +68,12 @@ import {
   formatHelpdeskCategory,
   extractHelpdeskFloor,
   extractHelpdeskZone,
-  extractTicketRaisedBy
+  extractTicketRaisedBy,
+  normalizeHelpdeskChannel,
+  normalizeHelpdeskSite,
+  normalizeHelpdeskZone,
+  normalizeHelpdeskCategory,
+  normalizeHelpdeskStatus
 } from '../lib/dateUtils'
 
 const PALETTE = [
@@ -451,10 +456,8 @@ export function HelpdeskSection({
   const channelCountsData = useMemo(() => {
     const map = {}
     rows.forEach((r) => {
-      let via = String(r['Request Via'] || '').trim()
-      if (!via || via === '-' || via.toLowerCase() === 'unspecified') via = 'Other'
-      if (via.toLowerCase() === 'in person') via = 'In Person'
-      map[via] = (map[via] || 0) + 1
+      const channel = normalizeHelpdeskChannel(r['Request Via'])
+      map[channel] = (map[channel] || 0) + 1
     })
     const total = rows.length || 1
     const colors = ['#2563EB', '#10B981', '#F59E0B', '#9333EA', '#0D9488', '#EC4899', '#6366F1']

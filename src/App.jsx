@@ -125,10 +125,10 @@ export default function App() {
     return [
       {
         date: 'Today, 10:15 AM',
-        fileName: 'HELP DESK TRACKER FY 25-26 - Master (4).xlsx',
+        fileName: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
         tracker: 'helpdesk',
-        rows: 1131,
-        uploadedBy: 'Folder Excel Master'
+        rows: 9923,
+        uploadedBy: 'OneDrive Master Sync'
       },
       {
         date: 'Today, 09:30 AM',
@@ -1500,7 +1500,7 @@ export default function App() {
   // Console log verification for Excel Dashboard Charts & Audit (as requested)
   useEffect(() => {
     console.log("Excel Dashboard Charts Found: [1: Category Turnaround Time (TAT), 2: Proactive vs Reactive by Site & Floor, 3: Service Delivery Model (Proactive vs Reactive), 4: Request Intake Channels, 5: Employee Complaints by Category, 6: Monthly Reactive Inflow & SLA Trend, 7: Total Ticket Trend (Month-Wise), 8: Reactive Tickets by Floor & Category]")
-    console.log(`Helpdesk Audit: File: HELP DESK TRACKER FY 25-26 - Master (4).xlsx | Excel Total: ${helpdeskSummary.total.toLocaleString()} | Reactive: ${helpdeskSummary.reactive.toLocaleString()} | Proactive: ${helpdeskSummary.proactive.toLocaleString()} | Resolved: ${helpdeskSummary.resolved.toLocaleString()} | Open/WIP: ${helpdeskSummary.openWip.toLocaleString()} | Match: OK`)
+    console.log(`Helpdesk Audit: File: HELP DESK TRACKER FY 25-26 - Master.xlsx | Excel Total: ${helpdeskSummary.total.toLocaleString()} | Reactive: ${helpdeskSummary.reactive.toLocaleString()} | Proactive: ${helpdeskSummary.proactive.toLocaleString()} | Resolved: ${helpdeskSummary.resolved.toLocaleString()} | Open/WIP: ${helpdeskSummary.openWip.toLocaleString()} | Match: OK`)
   }, [helpdeskSummary])
 
   return (
@@ -1795,7 +1795,7 @@ export default function App() {
                   className="w-full p-2.5 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 focus:ring-1 focus:ring-[#00A651] focus:outline-none"
                 />
                 <p className="text-[10px] text-slate-500 mt-1">
-                  Paste the SharePoint sharing link for "HELP DESK TRACKER FY 25-26 - Master (4).xlsx".
+                  Paste the SharePoint sharing link for "HELP DESK TRACKER FY 25-26 - Master.xlsx".
                 </p>
               </div>
 
