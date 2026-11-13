@@ -1771,24 +1771,26 @@ export function extractHelpdeskZone(r) {
 
 /**
  * Normalizes Helpdesk 'Request Via' (Channel)
- * Trims, title-cases, merges synonyms:
- * "MS Teams" / "Microsoft Teams" -> "Teams"
- * "In-Person" / "Walk-in" -> "In Person"
- * "E-Mail" / "email" / "Mail" -> "Email"
- * "QR" / "QR Scan" -> "QR Code"
- * "Call" / "Telephone" -> "Phone"
+ * Trims, title-cases, keeps distinct channels:
+ * "In Person" / "In person" / "Walk-in" -> "In Person"
+ * "Phone" / "Call" / "Telephone" -> "Phone"
+ * "Mail" -> "Mail" (Physical Mail / Dak - kept distinct!)
+ * "Email" / "E-Mail" -> "Email" (Electronic Mail - kept distinct!)
+ * "Teams" / "MS Teams" -> "Teams"
+ * "QR Code" / "QR" -> "QR Code"
  * Empty / unspecified -> "Other"
  */
 export function normalizeHelpdeskChannel(via) {
   let s = String(via || '').trim();
   if (!s || s === '-' || s === '—' || s.toLowerCase() === 'unspecified') return 'Other';
   const l = s.toLowerCase();
-  if (l.includes('team')) return 'Teams';
+  if (l === 'teams' || l.includes('team')) return 'Teams';
+  if (l === 'mail') return 'Mail';
+  if (l === 'email' || l === 'e-mail') return 'Email';
   if (l.includes('walk') || l.includes('person') || l.includes('in-person')) return 'In Person';
-  if (l.includes('mail')) return 'Email';
   if (l.includes('qr')) return 'QR Code';
   if (l.includes('phone') || l.includes('call') || l.includes('tele')) return 'Phone';
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  return s;
 }
 
 /**
