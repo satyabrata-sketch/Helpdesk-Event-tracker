@@ -10,7 +10,7 @@ export function AccessRevokedBanner({
   onRetry,
   onDismiss,
   onUploadManually,
-  ownerEmail = 'satyabrata_mohanty1@cbre.com',
+  ownerEmail = 'alwajid_ansari@cbre.com',
   customMessage = null
 }) {
   return (

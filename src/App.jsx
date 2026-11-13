@@ -147,7 +147,10 @@ export default function App() {
   )
   const [helpdeskUrl, setHelpdeskUrl] = useState(
     import.meta.env.VITE_HELPDESK_TRACKER_URL ||
-    'https://cbre-my.sharepoint.com/:x:/r/personal/satyabrata_mohanty1_cbre_com/Documents/Desktop/Trackers/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w9923cb7e81249fa81f4a938c10fa2e4&csf=1&web=1&e=satyabrata'
+    'https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w5dc43c3ec1674b61b95cbfbe614ffbc5'
+  )
+  const [helpdeskFileId, setHelpdeskFileId] = useState(
+    import.meta.env.VITE_HELPDESK_FILE_ID || 'w5dc43c3ec1674b61b95cbfbe614ffbc5'
   )
 
   // Primary Data State (Initialized from 100% full Folder Excel seed or localStorage cache)
@@ -1191,6 +1194,14 @@ export default function App() {
           if (helpdeskCfg?.last_sync_status === 'access_revoked') {
             setFile2Revoked(true)
           }
+          if (helpdeskCfg?.share_url) {
+            setHelpdeskUrl(helpdeskCfg.share_url)
+            try {
+              const u = new URL(helpdeskCfg.share_url)
+              const d = u.searchParams.get('d')
+              if (d) setHelpdeskFileId(d)
+            } catch (_e) {}
+          }
           if (helpdeskCfg?.last_synced_at) {
             setLastSyncedAt(helpdeskCfg.last_synced_at)
           } else if (eventCfg?.last_synced_at) {
@@ -1389,6 +1400,21 @@ export default function App() {
 
       if (customFileUrl) localStorage.setItem('custom_helpdesk_file_url', customFileUrl)
       if (customFileId) localStorage.setItem('custom_helpdesk_file_id', customFileId)
+      if (customFileId) setHelpdeskFileId(customFileId)
+      if (customFileUrl) setHelpdeskUrl(customFileUrl)
+
+      // Persist to tracker_configs in Supabase
+      try {
+        if (supabase) {
+          const updatedShareUrl = customFileUrl || (customFileId ? `https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=${customFileId}` : helpdeskUrl)
+          await supabase.from('tracker_configs').update({
+            share_url: updatedShareUrl,
+            updated_at: new Date().toISOString()
+          }).eq('id', 'helpdesk_tracker')
+        }
+      } catch (dbErr) {
+        console.warn('Could not update tracker_configs from override:', dbErr)
+      }
 
       // 1. Fetch latest Excel from OneDrive, upsert into public.helpdesk
       const syncResult = await triggerHelpdeskSync({
@@ -1531,7 +1557,7 @@ export default function App() {
       {/* 2. ACCESS REVOKED WARNING BANNER */}
       {file2Revoked && (
         <AccessRevokedBanner
-          ownerEmail="satyabrata_mohanty1@cbre.com"
+          ownerEmail="alwajid_ansari@cbre.com"
           customMessage="OneDrive Sync Failed - Please Upload Excel Manually to Update"
           onRetry={() => {
             setFile2Revoked(false)
@@ -1732,6 +1758,8 @@ export default function App() {
         setEventUrl={setEventUrl}
         helpdeskUrl={helpdeskUrl}
         setHelpdeskUrl={setHelpdeskUrl}
+        helpdeskFileId={helpdeskFileId}
+        setHelpdeskFileId={setHelpdeskFileId}
         lastSyncedAt={lastSyncedAt}
         isSyncing={isSyncing}
         onTriggerSync={handleSyncNow}

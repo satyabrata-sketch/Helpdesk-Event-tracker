@@ -49,11 +49,16 @@ export default async function handler(req, res) {
       ...configRaw,
       name: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
       file_name: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
+      file_id: 'w5dc43c3ec1674b61b95cbfbe614ffbc5',
       total_rows: 9923
     } : {
       id: 'helpdesk_tracker',
       name: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
       file_name: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
+      file_id: 'w5dc43c3ec1674b61b95cbfbe614ffbc5',
+      share_url: 'https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w5dc43c3ec1674b61b95cbfbe614ffbc5',
+      owner_info: 'alwajid_ansari@cbre.com (Shared with Read+Edit)',
+      is_owned: false,
       total_rows: 9923,
       last_sync_status: 'success',
       last_synced_at: new Date().toISOString()

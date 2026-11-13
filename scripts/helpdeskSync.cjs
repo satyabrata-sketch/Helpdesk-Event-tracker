@@ -70,14 +70,13 @@ function resolveHelpdeskFilePath(customPath = null) {
   }
 
   const candidatePaths = [
-    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/HELP DESK TRACKER FY 25-26 - Master.xlsx',
     'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx',
     path.resolve(__dirname, '../CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx'),
     path.resolve('./CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx'),
     'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/HELP DESK TRACKER FY 25-26 - Master.xlsx',
     path.resolve('./HELP DESK TRACKER FY 25-26 - Master.xlsx'),
-    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/Event/HELP DESK TRACKER FY 25-26 - Master.xlsx',
-    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/HELP DESK TRACKER FY 25-26 - Master.xlsx'
+    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/HELP DESK TRACKER FY 25-26 - Master (3).xlsx',
+    'C:/Users/SMohanty6/OneDrive - CBRE, Inc/HELP DESK TRACKER FY 25-26.xlsx'
   ];
 
   for (const p of candidatePaths) {
@@ -90,7 +89,7 @@ function resolveHelpdeskFilePath(customPath = null) {
 }
 
 function extractHelpdeskFileIdAndUrl(customUrl = null, customId = null) {
-  let fileWebUrl = customUrl || process.env.VITE_HELPDESK_TRACKER_URL || 'https://cbre-my.sharepoint.com/:x:/r/personal/satyabrata_mohanty1_cbre_com/Documents/Desktop/Trackers/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w9923cb7e81249fa81f4a938c10fa2e4&csf=1&web=1&e=satyabrata';
+  let fileWebUrl = customUrl || process.env.VITE_HELPDESK_TRACKER_URL || 'https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w5dc43c3ec1674b61b95cbfbe614ffbc5';
   let fileId = customId || process.env.VITE_HELPDESK_FILE_ID || '';
   if (!fileId && fileWebUrl) {
     try {
@@ -98,7 +97,7 @@ function extractHelpdeskFileIdAndUrl(customUrl = null, customId = null) {
       fileId = u.searchParams.get('d') || '';
     } catch (_e) {}
   }
-  if (!fileId) fileId = 'w9923cb7e81249fa81f4a938c10fa2e4';
+  if (!fileId) fileId = 'w5dc43c3ec1674b61b95cbfbe614ffbc5';
   return { fileId, fileWebUrl };
 }
 
@@ -132,7 +131,8 @@ async function syncHelpdeskFromExcel(options = {}) {
     if (!rawSr || rawSr === 'Sr no.' || rawSr === 'undefined' || rawSr === 'null') continue;
 
     // Normalize sr_no (strip trailing decimals if any e.g. "5072.0" -> "5072")
-    const sr_no = rawSr.split('.')[0];
+    const rawSrClean = rawSr.split('.')[0];
+    const sr_no = (rawSrClean === '5838' || rawSrClean === '05838') ? '05838' : rawSrClean;
     const statusVal = String(r['Status / WIP'] || r['Status'] || r['status'] || '').trim();
 
     cleanRows.push({
@@ -279,8 +279,8 @@ async function syncHelpdeskFromExcel(options = {}) {
       .update({
         name: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
         share_url: fileWebUrl,
-        is_owned: true,
-        owner_info: 'satyabrata_mohanty1@cbre.com (Self Owned)',
+        is_owned: false,
+        owner_info: 'alwajid_ansari@cbre.com (Shared with Read+Edit)',
         last_sync_status: 'success',
         last_sync_error: null,
         last_synced_at: syncTimestamp,

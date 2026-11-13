@@ -411,10 +411,6 @@ function resolveHelpdeskFilePath(customPath = null) {
     return customPath;
   }
   // 1. Direct OneDrive synchronized folder path (Primary live source)
-  const trackersPath = 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/HELP DESK TRACKER FY 25-26 - Master.xlsx';
-  if (fs.existsSync(trackersPath)) {
-    return trackersPath;
-  }
   const cbreSyncPath = 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/apps/Dashboard/Helpdesk & Event/CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx';
   if (fs.existsSync(cbreSyncPath)) {
     return cbreSyncPath;
@@ -422,10 +418,6 @@ function resolveHelpdeskFilePath(customPath = null) {
   const localCbreSync = path.resolve('./CBRE-Sync/HELP DESK TRACKER FY 25-26 - Master.xlsx');
   if (fs.existsSync(localCbreSync)) {
     return localCbreSync;
-  }
-  const oneDrivePath = 'C:/Users/SMohanty6/OneDrive - CBRE, Inc/Desktop/Trackers/Event/HELP DESK TRACKER FY 25-26 - Master.xlsx';
-  if (fs.existsSync(oneDrivePath)) {
-    return oneDrivePath;
   }
   // 2. Local workspace path
   const localPath = path.resolve('./HELP DESK TRACKER FY 25-26 - Master.xlsx');
@@ -436,7 +428,7 @@ function resolveHelpdeskFilePath(customPath = null) {
 }
 
 function extractHelpdeskFileIdAndUrl(customUrl = null, customId = null) {
-  let fileWebUrl = customUrl || process.env.VITE_HELPDESK_TRACKER_URL || 'https://cbre-my.sharepoint.com/:x:/r/personal/satyabrata_mohanty1_cbre_com/Documents/Desktop/Trackers/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w9923cb7e81249fa81f4a938c10fa2e4&csf=1&web=1&e=satyabrata';
+  let fileWebUrl = customUrl || process.env.VITE_HELPDESK_TRACKER_URL || 'https://cbre-my.sharepoint.com/:x:/r/personal/alwajid_ansari_cbre_com/Documents/Attachments/HELP%20DESK%20TRACKER%20FY%2025-26%20-%20Master.xlsx?d=w5dc43c3ec1674b61b95cbfbe614ffbc5';
   let fileId = customId || process.env.VITE_HELPDESK_FILE_ID || '';
   if (!fileId && fileWebUrl) {
     try {
@@ -444,7 +436,7 @@ function extractHelpdeskFileIdAndUrl(customUrl = null, customId = null) {
       fileId = u.searchParams.get('d') || '';
     } catch (_e) {}
   }
-  if (!fileId) fileId = 'w9923cb7e81249fa81f4a938c10fa2e4';
+  if (!fileId) fileId = 'w5dc43c3ec1674b61b95cbfbe614ffbc5';
   return { fileId, fileWebUrl };
 }
 
