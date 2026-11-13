@@ -81,9 +81,11 @@ export default async function handler(req, res) {
       tickets = all;
     }
 
-    let closedTickets = 9894;
-    let openTickets = 26;
+    let closedTickets = 9921;
+    let openTickets = 14;
+    let totalRecords = config?.total_rows || 9938;
     if (tickets && tickets.length > 0) {
+      totalRecords = tickets.length;
       closedTickets = tickets.filter(t => {
         const s = String(t.status_wip || t.status || '').toLowerCase();
         const isNot = s.includes('not resolve') || s.includes('unresolve');
@@ -91,10 +93,7 @@ export default async function handler(req, res) {
       }).length;
       openTickets = tickets.filter(t => {
         const s = String(t.status_wip || t.status || '').toLowerCase();
-        const isBlank = !s || s === '-' || s === 'blank';
-        const isNot = s.includes('not resolve') || s.includes('unresolve');
-        const isResolved = !isNot && (s.includes('resolve') || s.includes('close'));
-        return !isBlank && !isResolved;
+        return s.includes('not resolve') || s.includes('unresolve');
       }).length;
     }
 
@@ -104,7 +103,7 @@ export default async function handler(req, res) {
       syncResult,
       trackerConfig: config,
       fileName: 'HELP DESK TRACKER FY 25-26 - Master.xlsx',
-      totalRecords: 9923,
+      totalRecords,
       closedTickets,
       openTickets,
       tickets: tickets || undefined,

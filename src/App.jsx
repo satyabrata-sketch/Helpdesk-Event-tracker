@@ -1239,28 +1239,24 @@ export default function App() {
   const handleSyncNow = async (silent = false) => {
     setIsSyncing(true)
     try {
-      const isHelpdeskActive = activeTab === 'helpdesk' || activeTab === 'helpdesk_tracker'
+      // Always sync Helpdesk in background on every auto-poll or manual Sync click
+      try {
+        const storedHdUrl = localStorage.getItem('custom_helpdesk_file_url') || ''
+        const storedHdId = localStorage.getItem('custom_helpdesk_file_id') || ''
+        await triggerHelpdeskSync({ fileUrl: storedHdUrl, fileId: storedHdId })
+      } catch (he) {
+        console.warn('[handleSyncNow] Helpdesk sync trigger warning:', he.message)
+      }
 
-      // Always sync Helpdesk when on Helpdesk tab or when user clicks Sync Live
-      if (isHelpdeskActive || !silent) {
-        try {
-          const storedHdUrl = localStorage.getItem('custom_helpdesk_file_url') || ''
-          const storedHdId = localStorage.getItem('custom_helpdesk_file_id') || ''
-          await triggerHelpdeskSync({ fileUrl: storedHdUrl, fileId: storedHdId })
-        } catch (he) {
-          console.warn('[handleSyncNow] Helpdesk sync trigger warning:', he.message)
-        }
-
-        const liveTickets = await getHelpdeskTickets()
-        if (liveTickets && liveTickets.length > 0) {
-          setHelpdeskData((prev) => ({
-            ...prev,
-            activeSheet: 'Helpdesk Tracker',
-            sheetNames: ['Helpdesk Tracker'],
-            headers: Object.keys(liveTickets[0] || {}),
-            rows: liveTickets
-          }))
-        }
+      const liveTickets = await getHelpdeskTickets()
+      if (liveTickets && liveTickets.length > 0) {
+        setHelpdeskData((prev) => ({
+          ...prev,
+          activeSheet: 'Helpdesk Tracker',
+          sheetNames: ['Helpdesk Tracker'],
+          headers: Object.keys(liveTickets[0] || {}),
+          rows: liveTickets
+        }))
       }
 
       // Event sync via /api/sync-live

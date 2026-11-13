@@ -195,20 +195,17 @@ export function HelpdeskSection({
         resolved++
         if (isDt3) dt3Resolved++
         else dt4Resolved++
-      } else if (isBlankStatus) {
-        blankStatus++
-      } else {
+      } else if (isNotResolved) {
         open++
+        notResolved++
         if (isDt3) dt3Open++
         else dt4Open++
-
-        if (isWip) {
-          wip++
-          if (isDt3) dt3Wip++
-          else dt4Wip++
-        } else {
-          notResolved++
-        }
+      } else if (isWip) {
+        wip++
+        if (isDt3) dt3Wip++
+        else dt4Wip++
+      } else if (isBlankStatus) {
+        blankStatus++
       }
 
       // SLA Breached

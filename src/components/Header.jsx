@@ -210,7 +210,7 @@ export function Header({
               {/* Synced Time Badge */}
               <div className="flex items-center gap-1.5 text-[11px] text-[#C8E6C9] font-medium whitespace-nowrap bg-black/25 px-2.5 py-1 rounded-full border border-white/10">
                 <span className="w-2 h-2 rounded-full bg-[#00A651] inline-block shrink-0 animate-pulse shadow-[0_0_8px_#00A651]"></span>
-                <span>Synced: {syncedTimeDisplay} • Live</span>
+                <span>Last Auto-Synced: {syncedTimeDisplay} • Live</span>
               </div>
             </div>
 

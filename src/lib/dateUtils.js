@@ -1985,8 +1985,8 @@ export function applyHelpdeskFilters(allRows, filters = {}, kpiId = null) {
     const isNotResolved = rawSt.includes('not resolve') || rawSt.includes('unresolve');
     const isInProgress = rawSt.includes('progress') || rawSt.includes('wip');
     const isClosed = !isNotResolved && (rawSt.includes('resolve') || rawSt.includes('close'));
-    // Open / Pending = 29 (26 Not Resolved + 3 Work In Progress). Blank Status is NOT counted in Closed or Open.
-    const isOpen = !isClosed && !isBlankStatus;
+    // Open / Pending = Status/WIP = 'Not Resolved' ONLY (Must match Excel filter)
+    const isOpen = isNotResolved;
 
     // 11. KPI Drill-Down
     if (kpiId) {
